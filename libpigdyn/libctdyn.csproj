@@ -7,8 +7,8 @@
     <ProjectGuid>{0711F7C9-88E3-4A2F-8E7F-4B06DCD24E02}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>libpigdyn</RootNamespace>
-    <AssemblyName>libpigdyn</AssemblyName>
+    <RootNamespace>libctdyn</RootNamespace>
+    <AssemblyName>libctdyn</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

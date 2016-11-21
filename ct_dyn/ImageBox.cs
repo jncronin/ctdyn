@@ -17,6 +17,20 @@ namespace pig_View
         System.Drawing.Font f;
         System.Drawing.Brush bground, fground;
 
+        bool do_zones = false;
+        bool do_thresholds = false;
+
+        public bool DoZones
+        {
+            get { return do_zones; }
+            set { do_zones = value; }
+        }
+        public bool DoThresholds
+        {
+            get { return do_thresholds; }
+            set { do_thresholds = value; }
+        }
+
         public ImageBox()
         {
             Width = 512;
@@ -78,7 +92,7 @@ namespace pig_View
                         int act_x = (int)((double)x * 512 / ClientSize.Width);
                         int act_y = (int)((double)y * 512 / ClientSize.Height);
 
-                        if (Form1.do_segmentation)
+                        if (do_thresholds)
                         {
                             if (act_x >= 0 && act_x <= 511 && act_y >= 0 && act_y <= 511)
                             {

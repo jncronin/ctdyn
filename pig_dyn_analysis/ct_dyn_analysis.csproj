@@ -7,8 +7,8 @@
     <ProjectGuid>{10270A36-2382-4093-850A-4383C5EF0AC8}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>pig_dyn_analysis</RootNamespace>
-    <AssemblyName>pig_dyn_analysis</AssemblyName>
+    <RootNamespace>ctdyn</RootNamespace>
+    <AssemblyName>ctdyn</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
