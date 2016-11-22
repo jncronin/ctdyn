@@ -40,6 +40,38 @@ namespace libctdyn
 
         public delegate void ReportProgess(int n, int total);
 
+        public static short[,,] LoadImageData(FileInfo file, out SubjectData sd)
+        {
+            BinaryReader br = new BinaryReader(file.OpenRead());
+            SubjectData pd = new SubjectData();
+
+            for (int i = 0; i < 3; i++)
+                pd.spacing[i] = br.ReadDouble();
+
+            for (int i = 0; i < 3; i++)
+                pd.dimensions[i] = br.ReadInt32();
+
+            pd.source_name = ReadString(br);
+            pd.acquisition_datetime = ReadString(br);
+            pd.series_name = ReadString(br);
+            pd.pig_name = ReadString(br);
+
+            long data_start = br.BaseStream.Position;
+
+            short[,,] ret = new short[pd.dimensions[2], pd.dimensions[1], pd.dimensions[0]];
+            for (int z = 0; z < pd.dimensions[2]; z++)
+            {
+                for (int y = 0; y < pd.dimensions[1]; y++)
+                {
+                    for (int x = 0; x < pd.dimensions[0]; x++)
+                        ret[z, y, x] = br.ReadInt16();
+                }
+            }
+
+            sd = pd;
+            return ret;
+        }
+
         public static int DoAnalysis(ICollection<FileInfo> files, string ofname,
             ReportProgess rp = null)
         {

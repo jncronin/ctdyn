@@ -78,6 +78,16 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DXImageBox\DXImageBox.vcxproj">
+      <Project>{c8a4904d-23c3-4a8c-a7a2-5e8751b99901}</Project>
+      <Name>DXImageBox</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\libpigdyn\libctdyn.csproj">
+      <Project>{0711f7c9-88e3-4a2f-8e7f-4b06dcd24e02}</Project>
+      <Name>libctdyn</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

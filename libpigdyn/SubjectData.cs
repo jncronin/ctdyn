@@ -27,7 +27,7 @@ using System.Threading.Tasks;
 
 namespace libctdyn
 {
-    class SubjectData
+    public class SubjectData
     {
         public string source_name;
         public string acquisition_datetime;
