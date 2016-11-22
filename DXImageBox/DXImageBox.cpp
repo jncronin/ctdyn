@@ -172,7 +172,18 @@ void DXImageBox::DXImageBox::InitD3D()
 
 void DXImageBox::DXImageBox::SetData(array<Int16, 3>^ d)
 {
+	if (d == nullptr)
+	{
+		cvt = NULL;
+		return;
+	}
+
 	void *data = malloc(sizeof(int32_t) * d->GetLength(2) * d->GetLength(1) * d->GetLength(0));
+	if (data == NULL)
+	{
+		cvt = NULL;
+		return;
+	}
 	uint32_t *ap_fls = (uint32_t *)malloc(sizeof(uint32_t) * d->GetLength(2));
 	uint32_t *ap_lls = (uint32_t *)malloc(sizeof(uint32_t) * d->GetLength(2));
 	uint32_t *ap_zss = (uint32_t *)malloc(sizeof(uint32_t) * d->GetLength(2));
@@ -227,7 +238,7 @@ void DXImageBox::DXImageBox::SetData(array<Int16, 3>^ d)
 	ID3D11Texture3D *vt;
 	auto ct3derr = d3ddev->CreateTexture3D(&td, &sd, &vt);
 
-	//free(data);
+	free(data);
 
 	ID3D11ShaderResourceView* srv[2];
 	auto srverr = d3ddev->CreateShaderResourceView(vt, NULL, &srv[0]);

@@ -29,6 +29,8 @@ namespace ct_dyn
                 inputdir.Text = fp.SelectedPath;
             }
             catch (Exception) { }
+
+            dir_changed();
         }
 
         private void outputfilebtn_Click(object sender, EventArgs e)
@@ -46,13 +48,7 @@ namespace ct_dyn
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            libctdyn.SubjectData sd;
-            short[,,] d = libctdyn.libctdyn.LoadImageData(new System.IO.FileInfo(@"c:\tmp\analysis-20150810180745.489000.bin"),
-                out sd);
 
-            dxImageBox1.ImageData = d;
-            tb_frame.Value = 0;
-            tb_frame.Maximum = sd.dimensions[2] - 1;
         }
 
         private void tableLayoutPanel5_Paint(object sender, PaintEventArgs e)
@@ -167,6 +163,81 @@ namespace ct_dyn
         private void cb_zones_CheckedChanged(object sender, EventArgs e)
         {
             dxImageBox1.ShowZones = cb_zones.Checked;
+        }
+
+        class MyListViewItem : ListViewItem
+        {
+            public System.IO.FileInfo fi;
+            public libctdyn.SubjectData sd;
+        }
+
+        void dir_changed()
+        {
+            var dir = inputdir.Text;
+            var di = new System.IO.DirectoryInfo(dir);
+            if(di.Exists)
+            {
+                var files = libctdyn.libctdyn.GetFilesInDir(di.FullName);
+
+                listView1.Items.Clear();
+
+                foreach(var file in files)
+                {
+                    var sd = libctdyn.libctdyn.LoadSubjectData(file);
+
+                    var lvi = new MyListViewItem();
+                    lvi.fi = file;
+                    lvi.sd = sd;
+                    lvi.Text = sd.pig_name;
+
+                    lvi.SubItems.Add(sd.series_name);
+                    lvi.SubItems.Add(sd.acquisition_datetime.Substring(0, 8));
+                    lvi.SubItems.Add(sd.acquisition_datetime.Substring(8, 6));
+
+                    lvi.Checked = true;
+
+                    listView1.Items.Add(lvi);
+                }
+            }
+        }
+
+        private void inputdir_TextChanged(object sender, EventArgs e)
+        {
+            dir_changed();
+        }
+
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var si = listView1.SelectedItems;
+            if (si.Count == 0)
+                dxImageBox1.ImageData = null;
+            else
+            {
+                var sia = si[0] as MyListViewItem;
+
+                if (sia == null || sia.fi == null)
+                    dxImageBox1.ImageData = null;
+                else
+                {
+                    libctdyn.SubjectData sd;
+                    dxImageBox1.ImageData = libctdyn.libctdyn.LoadImageData(sia.fi, out sd);
+                    dxImageBox1.Frame = 0;
+                    tb_frame.Value = 0;
+                    tb_frame.Maximum = sd.dimensions[2] - 1;
+                    tb_w.Value = dxImageBox1.Window;
+                    tb_l.Value = dxImageBox1.Level;
+                }
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            List<System.IO.FileInfo> fis = new List<System.IO.FileInfo>();
+            foreach (MyListViewItem lvi in listView1.CheckedItems)
+                fis.Add(lvi.fi);
+
+            ProgressBar pb = new ProgressBar(fis, outputfile.Text);
+            pb.ShowDialog();
         }
     }
 }

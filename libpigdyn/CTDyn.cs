@@ -40,6 +40,25 @@ namespace libctdyn
 
         public delegate void ReportProgess(int n, int total);
 
+        public static SubjectData LoadSubjectData(FileInfo file)
+        {
+            BinaryReader br = new BinaryReader(file.OpenRead());
+            SubjectData pd = new SubjectData();
+
+            for (int i = 0; i < 3; i++)
+                pd.spacing[i] = br.ReadDouble();
+
+            for (int i = 0; i < 3; i++)
+                pd.dimensions[i] = br.ReadInt32();
+
+            pd.source_name = ReadString(br);
+            pd.acquisition_datetime = ReadString(br);
+            pd.series_name = ReadString(br);
+            pd.pig_name = ReadString(br);
+
+            return pd;
+        }
+
         public static short[,,] LoadImageData(FileInfo file, out SubjectData sd)
         {
             BinaryReader br = new BinaryReader(file.OpenRead());
