@@ -52,13 +52,22 @@ namespace ct_dyn
                     for(int z = 0; z < slices; z++)
                     {
                         long count = 0;
+                        long items = 0;
                         for(int y = 0; y < value.GetLength(1); y++)
                         {
                             for (int x = 0; x < value.GetLength(2); x++)
-                                count += value[z, y, x];
+                            {
+                                var v = value[z, y, x];
+
+                                if (v >= -1000)
+                                {
+                                    count += value[z, y, x];
+                                    items++;
+                                }
+                            }
                         }
 
-                        count = count / value.GetLength(1) / value.GetLength(2);
+                        count = count / items;
 
                         points[z] = (int)count;
 
@@ -100,8 +109,8 @@ namespace ct_dyn
                     int prev_pt = (points[prev_z] - min_pt) * ClientSize.Height / (max_pt - min_pt);
                     int cur_pt = (points[cur_z] - min_pt) * ClientSize.Height / (max_pt - min_pt);
 
-                    int cur_x = (idx + 1) * ClientSize.Width / points.Length;
-                    int prev_x = idx * ClientSize.Width / points.Length;
+                    int cur_x = idx * ClientSize.Width / points.Length;
+                    int prev_x = (idx - 1) * ClientSize.Width / points.Length;
 
                     eargs.Graphics.DrawLine(p, prev_x, prev_pt, cur_x, cur_pt);
                 }
