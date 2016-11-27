@@ -54,6 +54,9 @@
     <Compile Include="ImageBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="MLDDisplay.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="ProgressBar.cs">
       <SubType>Form</SubType>

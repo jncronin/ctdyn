@@ -210,22 +210,31 @@ namespace ct_dyn
         {
             var si = listView1.SelectedItems;
             if (si.Count == 0)
+            {
                 dxImageBox1.ImageData = null;
+                mldDisplay1.ImageData = null;
+            }
             else
             {
                 var sia = si[0] as MyListViewItem;
 
                 if (sia == null || sia.fi == null)
+                {
                     dxImageBox1.ImageData = null;
+                    mldDisplay1.ImageData = null;
+                }
                 else
                 {
                     libctdyn.SubjectData sd;
-                    dxImageBox1.ImageData = libctdyn.libctdyn.LoadImageData(sia.fi, out sd);
+                    var id = libctdyn.libctdyn.LoadImageData(sia.fi, out sd);
+                    dxImageBox1.ImageData = id;
                     dxImageBox1.Frame = 0;
                     tb_frame.Value = 0;
                     tb_frame.Maximum = sd.dimensions[2] - 1;
                     tb_w.Value = dxImageBox1.Window;
                     tb_l.Value = dxImageBox1.Level;
+
+                    mldDisplay1.ImageData = id;
                 }
             }
         }
@@ -238,6 +247,48 @@ namespace ct_dyn
 
             ProgressBar pb = new ProgressBar(fis, outputfile.Text);
             pb.ShowDialog();
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tb_fa_TextChanged(object sender, EventArgs e)
+        {
+            int val;
+            if(int.TryParse(tb_fa.Text, out val))
+            {
+                mldDisplay1.FrameAdjust = val;
+            }
+        }
+
+        private void cb_ie_SelectedValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void cb_ie_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch(cb_ie.SelectedIndex)
+            {
+                case 0:
+                    mldDisplay1.I = 1;
+                    mldDisplay1.E = 2;
+                    break;
+                case 1:
+                    mldDisplay1.I = 2;
+                    mldDisplay1.E = 1;
+                    break;
+                case 2:
+                    mldDisplay1.I = 1;
+                    mldDisplay1.E = 4;
+                    break;
+                case 3:
+                    mldDisplay1.I = 4;
+                    mldDisplay1.E = 1;
+                    break;
+            }
         }
     }
 }
