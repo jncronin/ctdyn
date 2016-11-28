@@ -1,0 +1,9 @@
+ct_dyn_analysis
+
+Simple tools for basic analysis of CT images exported from 3D Slicer by
+MultiVolumeTools (https://github.com/jncronin/MultiVolumeTools)
+
+GUI tool requires DX11 for the image display to work (other functionality
+does not require this).
+
+
