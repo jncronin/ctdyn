@@ -40,7 +40,14 @@ namespace ct_dyn
         {
             WorkerArgs wargs = e.Argument as WorkerArgs;
 
-            libctdyn.libctdyn.DoAnalysis(wargs.fis, wargs.ofile, rp);
+            try
+            {
+                libctdyn.libctdyn.DoAnalysis(wargs.fis, wargs.ofile, rp);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error");
+            }
         }
 
         void rp(int n, int total)

@@ -30,12 +30,31 @@ namespace libctdyn
 {
     public class libctdyn
     {
+        internal static Dictionary<string, SubjectData.BreathCharacteristics> chars = new Dictionary<string, SubjectData.BreathCharacteristics>();
+
         public static ICollection<FileInfo> GetFilesInDir(string file_dir)
         {
             // Get all available analysis files
             var DirInfo = new System.IO.DirectoryInfo(file_dir);
             var files = DirInfo.GetFiles("analysis-*.bin");
             return files;
+        }
+
+        public static SubjectData.BreathCharacteristics GetBreathCharacteristics(SubjectData sd)
+        {
+            SubjectData.BreathCharacteristics bc;
+
+            if(!chars.TryGetValue(sd.Name, out bc))
+            {
+                bc = new SubjectData.BreathCharacteristics();
+                chars[sd.Name] = bc;
+            }
+            return bc;
+        }
+
+        public static void SetBreathCharacteristics(SubjectData sd, SubjectData.BreathCharacteristics bc)
+        {
+            chars[sd.Name] = bc;
         }
 
         public delegate void ReportProgess(int n, int total);
@@ -98,9 +117,9 @@ namespace libctdyn
 
             // Modules to use
             List<Module> modules = new List<Module>();
-            modules.Add(new FrameModule(20));
-            modules.Add(new TimeModule(20, 250));
-            modules.Add(new SubjectInfo(20));
+            modules.Add(new FrameModule());
+            modules.Add(new TimeModule());
+            modules.Add(new SubjectInfo());
             modules.Add(new WholeFrameModule());
             modules.Add(new ThresholdModule(new Threshold[]
             {
@@ -140,17 +159,15 @@ namespace libctdyn
                 // Build list of actual frame indices
                 List<int> f_indices = new List<int>();
                 int f_adjust = 0;
-                var pig_match = SubjectInfo.pig.Match(pd.subject_name);
-                var dyn_match = SubjectInfo.dyn.Match(pd.source_name);
-                string breath_id = "Subj" + pig_match.Groups[1].Value + "S" + pd.series_name + "Dyn" + dyn_match.Groups[1].Value;
-                SubjectInfo.BreathCharacteristics bc;
-                if (SubjectInfo.chars.TryGetValue(breath_id, out bc))
-                    f_adjust = bc.f_adjust;
+                var name = pd.Name;
+                pd.bc = GetBreathCharacteristics(pd);
+                f_adjust = pd.bc.f_adjust;
 
                 for (int z = 0; z < pd.dimensions[2]; z++)
                 {
                     int act_z = z + f_adjust;
-                    act_z += pd.dimensions[2];
+                    while(act_z < 0)
+                        act_z += pd.dimensions[2];
                     act_z %= pd.dimensions[2];
                     f_indices.Add(act_z);
                 }

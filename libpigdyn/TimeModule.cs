@@ -30,14 +30,6 @@ namespace libctdyn
 {
     class TimeModule : Module
     {
-        int fpb, interval;
-
-        public TimeModule(int frames_per_breath, int time_interval)
-        {
-            fpb = frames_per_breath;
-            interval = time_interval;
-        }
-
         public override void OutputHeaders(StreamWriter sw)
         {
             sw.Write("time,");
@@ -45,7 +37,7 @@ namespace libctdyn
 
         public override void OutputSlice(StreamWriter sw, short[,] slice, int z, int f_index, SubjectData pd)
         {
-            sw.Write(((f_index % fpb) * interval).ToString() + ",");
+            sw.Write(((f_index % pd.bc.fpb) * pd.bc.time_interval).ToString() + ",");
         }
     }
 }

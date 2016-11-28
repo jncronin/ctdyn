@@ -30,13 +30,6 @@ namespace libctdyn
 {
     class FrameModule : Module
     {
-        int fpb;
-
-        public FrameModule(int frames_per_breath)
-        {
-            fpb = frames_per_breath;
-        }
-
         public override void OutputHeaders(StreamWriter sw)
         {
             sw.Write("frame,");
@@ -44,7 +37,7 @@ namespace libctdyn
 
         public override void OutputSlice(StreamWriter sw, short[,] slice, int z, int f_index, SubjectData pd)
         {
-            f_index %= fpb;
+            f_index %= pd.bc.fpb;
             sw.Write(f_index.ToString() + ",");
         }
     }

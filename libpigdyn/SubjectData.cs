@@ -34,6 +34,13 @@ namespace libctdyn
         public string series_name;
         public string subject_name;
 
+        public class BreathCharacteristics
+        {
+            public int is_pc, i = 1, e = 2, is_injured, f_adjust, fpb = 20, time_interval = 250;
+        }
+
+        public BreathCharacteristics bc = new BreathCharacteristics();
+
         internal static System.Text.RegularExpressions.Regex subj, dyn;
 
         static SubjectData()

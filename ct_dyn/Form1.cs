@@ -174,13 +174,6 @@ namespace ct_dyn
         {
             public System.IO.FileInfo fi;
             public libctdyn.SubjectData sd;
-
-            public int i = 1;
-            public int e = 2;
-            public int f_adjust = 0;
-
-            public bool is_pc = false;
-            public bool is_injured = false;
         }
 
         void dir_changed()
@@ -225,7 +218,7 @@ namespace ct_dyn
                         listView1.Items.Add(lvi);
                     }
 
-                    load_datafile(di.FullName + "\\cydyn.settings");
+                    load_datafile(di.FullName + "\\ctdyn.settings");
                 }
             }
             catch(Exception)
@@ -253,6 +246,8 @@ namespace ct_dyn
                     int f_adjust = int.Parse(sr.ReadLine());
                     bool is_pc = bool.Parse(sr.ReadLine());
                     bool is_injured = bool.Parse(sr.ReadLine());
+                    int fpb = int.Parse(sr.ReadLine());
+                    int tinterval = int.Parse(sr.ReadLine());
 
                     foreach(MyListViewItem lvi in listView1.Items)
                     {
@@ -260,11 +255,13 @@ namespace ct_dyn
                             lvi.sd.SeriesIndex == ser_idx &&
                             lvi.sd.OtherIndex == oth_idx)
                         {
-                            lvi.i = i;
-                            lvi.e = e;
-                            lvi.f_adjust = f_adjust;
-                            lvi.is_pc = is_pc;
-                            lvi.is_injured = is_injured;
+                            lvi.sd.bc.i = i;
+                            lvi.sd.bc.e = e;
+                            lvi.sd.bc.f_adjust = f_adjust;
+                            lvi.sd.bc.is_pc = is_pc ? 1 : 0;
+                            lvi.sd.bc.is_injured = is_injured ? 1 : 0;
+                            lvi.sd.bc.fpb = fpb;
+                            lvi.sd.bc.time_interval = tinterval;
                         }
                     }
                 }
@@ -289,11 +286,13 @@ namespace ct_dyn
                         sw.WriteLine(lvi.sd.SubjectIndex.ToString());
                         sw.WriteLine(lvi.sd.SeriesIndex.ToString());
                         sw.WriteLine(lvi.sd.OtherIndex.ToString());
-                        sw.WriteLine(lvi.i.ToString());
-                        sw.WriteLine(lvi.e.ToString());
-                        sw.WriteLine(lvi.f_adjust.ToString());
-                        sw.WriteLine(lvi.is_pc.ToString());
-                        sw.WriteLine(lvi.is_injured.ToString());
+                        sw.WriteLine(lvi.sd.bc.i.ToString());
+                        sw.WriteLine(lvi.sd.bc.e.ToString());
+                        sw.WriteLine(lvi.sd.bc.f_adjust.ToString());
+                        sw.WriteLine(lvi.sd.bc.is_pc.ToString());
+                        sw.WriteLine(lvi.sd.bc.is_injured.ToString());
+                        sw.WriteLine(lvi.sd.bc.fpb.ToString());
+                        sw.WriteLine(lvi.sd.bc.time_interval.ToString());
                     }
 
                     sw.Close();
@@ -337,21 +336,24 @@ namespace ct_dyn
                     tb_w.Value = dxImageBox1.Window;
                     tb_l.Value = dxImageBox1.Level;
 
-                    if (sia.i == 1 && sia.e == 2)
+                    if (sia.sd.bc.i == 1 && sia.sd.bc.e == 2)
                         cb_ie.SelectedIndex = 0;
-                    else if (sia.i == 2 && sia.e == 1)
+                    else if (sia.sd.bc.i == 2 && sia.sd.bc.e == 1)
                         cb_ie.SelectedIndex = 1;
-                    else if (sia.i == 1 && sia.e == 4)
+                    else if (sia.sd.bc.i == 1 && sia.sd.bc.e == 4)
                         cb_ie.SelectedIndex = 2;
-                    else if (sia.i == 4 && sia.e == 1)
+                    else if (sia.sd.bc.i == 4 && sia.sd.bc.e == 1)
                         cb_ie.SelectedIndex = 3;
                     else
                         cb_ie.SelectedIndex = -1;
 
-                    tb_fa.Text = sia.f_adjust.ToString();
+                    tb_fa.Text = sia.sd.bc.f_adjust.ToString();
 
-                    cb_pc.Checked = sia.is_pc;
-                    cb_injured.Checked = sia.is_injured;
+                    cb_pc.Checked = (sia.sd.bc.is_pc == 0) ? false : true;
+                    cb_injured.Checked = (sia.sd.bc.is_injured == 0) ? false : true;
+
+                    tb_fpb.Text = sia.sd.bc.fpb.ToString();
+                    tb_tinterval.Text = sia.sd.bc.time_interval.ToString();
 
                     lab_name.Text = sd.Name;
 
@@ -364,7 +366,10 @@ namespace ct_dyn
         {
             List<System.IO.FileInfo> fis = new List<System.IO.FileInfo>();
             foreach (MyListViewItem lvi in listView1.CheckedItems)
+            {
                 fis.Add(lvi.fi);
+                libctdyn.libctdyn.SetBreathCharacteristics(lvi.sd, lvi.sd.bc);
+            }
 
             ProgressBar pb = new ProgressBar(fis, outputfile.Text);
             pb.ShowDialog();
@@ -383,7 +388,7 @@ namespace ct_dyn
                 mldDisplay1.FrameAdjust = val;
 
                 if (listView1.SelectedItems.Count > 0)
-                    ((MyListViewItem)listView1.SelectedItems[0]).f_adjust = val;
+                    ((MyListViewItem)listView1.SelectedItems[0]).sd.bc.f_adjust = val;
             }
         }
 
@@ -416,21 +421,21 @@ namespace ct_dyn
 
             if (listView1.SelectedItems.Count > 0)
             {
-                ((MyListViewItem)listView1.SelectedItems[0]).i = mldDisplay1.I;
-                ((MyListViewItem)listView1.SelectedItems[0]).e = mldDisplay1.E;
+                ((MyListViewItem)listView1.SelectedItems[0]).sd.bc.i = mldDisplay1.I;
+                ((MyListViewItem)listView1.SelectedItems[0]).sd.bc.e = mldDisplay1.E;
             }
         }
 
         private void cb_pc_CheckedChanged(object sender, EventArgs e)
         {
             if (listView1.SelectedItems.Count > 0)
-                ((MyListViewItem)listView1.SelectedItems[0]).is_pc = cb_pc.Checked;
+                ((MyListViewItem)listView1.SelectedItems[0]).sd.bc.is_pc = cb_pc.Checked ? 1 : 0;
         }
 
         private void cb_injured_CheckedChanged(object sender, EventArgs e)
         {
             if (listView1.SelectedItems.Count > 0)
-                ((MyListViewItem)listView1.SelectedItems[0]).is_injured = cb_injured.Checked;
+                ((MyListViewItem)listView1.SelectedItems[0]).sd.bc.is_injured = cb_injured.Checked ? 1 : 0;
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -444,6 +449,28 @@ namespace ct_dyn
         private void dxImageBox1_Resize(object sender, EventArgs e)
         {
             dxImageBox1.Invalidate();
+        }
+
+        private void tb_fpb_TextChanged(object sender, EventArgs e)
+        {
+            int val;
+            if (int.TryParse(tb_fpb.Text, out val))
+            {
+                mldDisplay1.FramesPerBreath = val;
+
+                if (listView1.SelectedItems.Count > 0)
+                    ((MyListViewItem)listView1.SelectedItems[0]).sd.bc.fpb = val;
+            }
+        }
+
+        private void tb_tinterval_TextChanged(object sender, EventArgs e)
+        {
+            int val;
+            if (int.TryParse(tb_tinterval.Text, out val))
+            {
+                if (listView1.SelectedItems.Count > 0)
+                    ((MyListViewItem)listView1.SelectedItems[0]).sd.bc.time_interval = val;
+            }
         }
     }
 }

@@ -18,6 +18,7 @@ namespace ct_dyn
         int min_pt = 0;
         int i = 1;
         int e = 2;
+        int fpb = 20;
 
         int fa = 0;
 
@@ -27,12 +28,14 @@ namespace ct_dyn
             fground = new System.Drawing.SolidBrush(System.Drawing.Color.Black);
             f = new System.Drawing.Font("Arial", 14.0f);
             p = new System.Drawing.Pen(fground, 1.0f);
-            p2 = new System.Drawing.Pen(fground, 3.0f);
+            p2 = new System.Drawing.Pen(fground, 1.0f);
+            p2.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
         }
 
         public int I { get { return i; } set { i = value; Invalidate(); } }
         public int E { get { return e; } set { e = value; Invalidate(); } }
         public int FrameAdjust { get { return fa; } set { fa = value; Invalidate(); } }
+        public int FramesPerBreath { get { return fpb; } set { fpb = value; Invalidate(); } }
 
         public short[,,] ImageData
         {
@@ -123,17 +126,16 @@ namespace ct_dyn
                     eargs.Graphics.DrawLine(p, prev_x, prev_pt, cur_x, cur_pt);
                     eargs.Graphics.FillEllipse(fground, prev_x - 2, prev_pt - 2, 5, 5);
                     eargs.Graphics.FillEllipse(fground, cur_x - 2, cur_pt - 2, 5, 5);
-                    //eargs.Graphics.DrawLine(p2, prev_x, prev_pt, prev_x, prev_pt + 1);
-                    //eargs.Graphics.DrawLine(p2, cur_x, cur_pt, cur_x, cur_pt + 1);
                 }
 
-                int ie_line1 = ClientSize.Width * i / (i + e) / 2;
-                int ie_line2 = ie_line1 + ClientSize.Width / 2;
-                eargs.Graphics.DrawLine(p, ie_line1, 0, ie_line1, ClientSize.Height);
-                eargs.Graphics.DrawLine(p, ie_line2, 0, ie_line2, ClientSize.Height);
+                for(int start_frame = 0; start_frame < points.Length; start_frame += fpb)
+                {
+                    int start_x = ClientSize.Width * start_frame / points.Length;
+                    eargs.Graphics.DrawLine(p, start_x, 0, start_x, ClientSize.Height);
 
-                //eargs.Graphics.DrawString(i.ToString() + ":" + e.ToString(), f, fground, 10.0f, 10.0f);
-
+                    int ie_line = start_x + i * fpb * ClientSize.Width / (i + e) / points.Length;
+                    eargs.Graphics.DrawLine(p2, ie_line, 0, ie_line, ClientSize.Height);
+                }
             }
         }
     }
