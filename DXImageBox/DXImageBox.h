@@ -42,6 +42,8 @@ namespace DXImageBox {
 		BufferVars *bv;
 		uint32_t *ap_fl, *ap_ll, *ap_zs;
 
+		System::String ^err_str = nullptr;
+
 	public:
 		DXImageBox();
 		virtual void OnPaint(PaintEventArgs^ e) override;

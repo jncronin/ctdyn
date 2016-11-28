@@ -93,7 +93,11 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies />
+      <EmbedManagedResourceFile>%(EmbedManagedResourceFile)</EmbedManagedResourceFile>
     </Link>
+    <EmbeddedResource>
+      <LogicalName>resource</LogicalName>
+    </EmbeddedResource>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -104,7 +108,11 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies />
+      <EmbedManagedResourceFile>%(EmbedManagedResourceFile)</EmbedManagedResourceFile>
     </Link>
+    <EmbeddedResource>
+      <LogicalName>resource</LogicalName>
+    </EmbeddedResource>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -114,7 +122,11 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies />
+      <EmbedManagedResourceFile>%(EmbedManagedResourceFile)</EmbedManagedResourceFile>
     </Link>
+    <EmbeddedResource>
+      <LogicalName>resource</LogicalName>
+    </EmbeddedResource>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -124,7 +136,11 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies />
+      <EmbedManagedResourceFile>%(EmbedManagedResourceFile)</EmbedManagedResourceFile>
     </Link>
+    <EmbeddedResource>
+      <LogicalName>resource</LogicalName>
+    </EmbeddedResource>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Reference Include="System" />

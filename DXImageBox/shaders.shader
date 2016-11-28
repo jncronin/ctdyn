@@ -1,3 +1,5 @@
+const std::string shader = R"SHADER(
+
 Texture3D<int> tex : register(t0);
 Texture2D<int> ap : register(t1);
 
@@ -110,3 +112,5 @@ float4 psmain(PixelInputType input) : SV_TARGET
 
 	return ret;
 }
+
+)SHADER";

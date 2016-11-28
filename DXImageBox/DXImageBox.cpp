@@ -5,6 +5,18 @@
 #include "DXImageBox.h"
 #include <stdint.h>
 
+#include "resource.h"
+#include <string>
+
+#include "shaders.shader"
+
+#define TEST(code, msg) if(FAILED((code))) { \
+	d3ddev = NULL; \
+	d3d = NULL; \
+	err_str = (msg); \
+	return; \
+}
+
 using namespace System::Windows::Forms;
 
 typedef float RGBA[4]; //pre-c++11
@@ -65,7 +77,7 @@ void DXImageBox::DXImageBox::InitD3D()
 	ID3D11DeviceContext *devcon;           // the pointer to our Direct3D device context
 
 	// create a device, device context and swap chain using the information in the scd struct
-	D3D11CreateDeviceAndSwapChain(NULL,
+	auto cdscerr = D3D11CreateDeviceAndSwapChain(NULL,
 		D3D_DRIVER_TYPE_HARDWARE,
 		NULL,
 		NULL,
@@ -77,6 +89,7 @@ void DXImageBox::DXImageBox::InitD3D()
 		&dev,
 		NULL,
 		&devcon);
+	TEST(cdscerr, "CreateDevice");
 
 	d3ddev = dev;
 	d3d = devcon;
@@ -84,11 +97,13 @@ void DXImageBox::DXImageBox::InitD3D()
 
 	// get the address of the back buffer
 	ID3D11Texture2D *pBackBuffer;
-	swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
+	auto gberr = swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
+	TEST(gberr, "GetBuffer");
 
 	// use the back buffer address to create the render target
 	ID3D11RenderTargetView *backbuffer;
-	dev->CreateRenderTargetView(pBackBuffer, NULL, &backbuffer);
+	auto crtverr = dev->CreateRenderTargetView(pBackBuffer, NULL, &backbuffer);
+	TEST(crtverr, "CreateRenderTargetView");
 	bb = backbuffer;
 	pBackBuffer->Release();
 
@@ -110,19 +125,23 @@ void DXImageBox::DXImageBox::InitD3D()
 
 	// Shaders
 	ID3DBlob *vs = NULL, *ps = NULL, *vserrors = NULL, *pserrors = NULL;
-	auto vserr = D3DCompileFromFile(L"../../../DXImageBox/shaders.shader", NULL, NULL, "vsmain", "vs_4_0", NULL, NULL, &vs, &vserrors);
-	auto pserr = D3DCompileFromFile(L"../../../DXImageBox/shaders.shader", NULL, NULL, "psmain", "ps_4_0", NULL, NULL, &ps, &pserrors);
 
-	if (FAILED(vserr) || FAILED(pserr))
-	{
-		d3ddev = NULL;
-		return;
-	}
+	//auto vserr = D3DCompileFromFile(L"../../../DXImageBox/shaders.shader", NULL, NULL, "vsmain", "vs_4_0", NULL, NULL, &vs, &vserrors);
+	//auto pserr = D3DCompileFromFile(L"../../../DXImageBox/shaders.shader", NULL, NULL, "psmain", "ps_4_0", NULL, NULL, &ps, &pserrors);
+
+	auto vserr = D3DCompile((LPCVOID)shader.c_str(), shader.length(), NULL, NULL, NULL, "vsmain", "vs_4_0", NULL, NULL, &vs, &vserrors);
+	auto pserr = D3DCompile((LPCVOID)shader.c_str(), shader.length(), NULL, NULL, NULL, "psmain", "ps_4_0", NULL, NULL, &ps, &pserrors);
+
+	TEST(vserr, "Compile Vertex Shader");
+	TEST(pserr, "Compile Pixel Shader");
 	
 	ID3D11VertexShader *pVS;
 	ID3D11PixelShader *pPS;
 	auto pvserr = dev->CreateVertexShader(vs->GetBufferPointer(), vs->GetBufferSize(), NULL, &pVS);
 	auto ppserr = dev->CreatePixelShader(ps->GetBufferPointer(), ps->GetBufferSize(), NULL, &pPS);
+
+	TEST(pvserr, "CreateVertexShader");
+	TEST(ppserr, "CreatePixelShader");
 
 	d3d->VSSetShader(pVS, 0, 0);
 	d3d->PSSetShader(pPS, 0, 0);
@@ -137,12 +156,14 @@ void DXImageBox::DXImageBox::InitD3D()
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-	dev->CreateBuffer(&bd, NULL, &pVBuffer);
+	auto cberr = dev->CreateBuffer(&bd, NULL, &pVBuffer);
+	TEST(cberr, "CreateBuffer");
 	pVB = pVBuffer;
 
 	// Fill buffer
 	D3D11_MAPPED_SUBRESOURCE ms;
-	d3d->Map(pVBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
+	auto maperr = d3d->Map(pVBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
+	TEST(maperr, "Map");
 	memcpy(ms.pData, vertices, sizeof(vertices));
 	d3d->Unmap(pVBuffer, NULL);
 
@@ -154,6 +175,7 @@ void DXImageBox::DXImageBox::InitD3D()
 	};
 	ID3D11InputLayout *pLayout;
 	auto iederr = dev->CreateInputLayout(ied, 2, vs->GetBufferPointer(), vs->GetBufferSize(), &pLayout);
+	TEST(iederr, "CreateInputLayout");
 	d3d->IASetInputLayout(pLayout);
 
 	/*IDirect3DVertexShader9 *vs9;
@@ -237,11 +259,13 @@ void DXImageBox::DXImageBox::SetData(array<Int16, 3>^ d)
 
 	ID3D11Texture3D *vt;
 	auto ct3derr = d3ddev->CreateTexture3D(&td, &sd, &vt);
+	TEST(ct3derr, "CreateTexture3D");
 
 	free(data);
 
 	ID3D11ShaderResourceView* srv[2];
 	auto srverr = d3ddev->CreateShaderResourceView(vt, NULL, &srv[0]);
+	TEST(srverr, "CreateShaderResourceView");
 
 	d3d->PSSetShaderResources(0, 1, srv);
 
@@ -272,7 +296,15 @@ void DXImageBox::DXImageBox::OnPaint(PaintEventArgs ^ e)
 		auto g = e->Graphics;
 		g->FillRectangle(gcnew System::Drawing::SolidBrush(System::Drawing::Color::Black),
 			e->ClipRectangle);
-		g->DrawString("Direct3D Device Not Initialized", f, fground, 10.0f, 10.0f);
+
+		if (err_str != nullptr)
+		{
+			g->DrawString("Direct3D Device Not Initialized (" + err_str + ")", f, fground, 10.0f, 10.0f);
+		}
+		else
+		{
+			g->DrawString("Direct3D Device Not Initialized", f, fground, 10.0f, 10.0f);
+		}
 		return;
 	}
 	if (cvt == NULL)
