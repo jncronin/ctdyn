@@ -39,7 +39,18 @@ namespace ct_dyn
         public int E { get { return e; } set { e = value; Invalidate(); } }
         public int FrameAdjust { get { return fa; } set { fa = value; Invalidate(); } }
         public int FramesPerBreath { get { return fpb; } set { fpb = value; Invalidate(); } }
-        public int Marker { get { return marker; } set { marker = value; Invalidate(); } }
+        public int Marker { get { return marker; } set {
+                var old_marker = marker;
+                marker = value;
+                if (points != null)
+                {
+                    Invalidate(new System.Drawing.Rectangle(ClientSize.Width * marker / points.Length,
+                        0, 1, ClientSize.Height));
+                    Invalidate(new System.Drawing.Rectangle(ClientSize.Width * old_marker / points.Length,
+                        0, 1, ClientSize.Height));
+                }
+            }
+        }
 
         public short[,,] ImageData
         {
