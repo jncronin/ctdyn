@@ -1,3 +1,24 @@
+/* Copyright (C) 2016 by John Cronin
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+*/
+
 const std::string shader = R"SHADER(
 
 Texture3D<int> tex : register(t0);
@@ -11,6 +32,8 @@ uint ap_fl;
 uint ap_ll;
 uint ap_zs;
 int ap_show;
+float tex_x_scale, tex_x_offset;
+float tex_y_scale, tex_y_offset;
 
 SamplerState SampleType
 {
@@ -56,8 +79,8 @@ PixelInputType vsmain(VertexInputType input)
 float4 psmain(PixelInputType input) : SV_TARGET
 {
 	uint4 tex_coords;
-	tex_coords.x = (int)(input.tex_coords.x * 512.0f);
-	tex_coords.y = (int)(input.tex_coords.y * 512.0f);
+	tex_coords.x = (int)(input.tex_coords.x * tex_x_scale + tex_x_offset);
+	tex_coords.y = (int)(input.tex_coords.y * tex_y_scale + tex_y_offset);
 	tex_coords.z = frame;
 	tex_coords.w = 0;
 

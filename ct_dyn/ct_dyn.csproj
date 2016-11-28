@@ -53,9 +53,6 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="ImageBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="MLDDisplay.cs">
       <SubType>Component</SubType>
     </Compile>

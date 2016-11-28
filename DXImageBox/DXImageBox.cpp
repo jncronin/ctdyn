@@ -1,4 +1,23 @@
-// This is the main DLL file.
+/* Copyright (C) 2016 by John Cronin
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+*/
 
 #include "stdafx.h"
 
@@ -19,19 +38,10 @@
 
 using namespace System::Windows::Forms;
 
-typedef float RGBA[4]; //pre-c++11
-
 struct CUSTOMVERTEX {
 	float x, y, z;
 	float r, g, b, a;
 };
-
-/*CUSTOMVERTEX vertices[] =
-{
-	{ 0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f },
-	{ 0.45f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f },
-	{ -0.45f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f }
-};*/
 
 CUSTOMVERTEX vertices[] =
 {
@@ -43,17 +53,6 @@ CUSTOMVERTEX vertices[] =
 	{ 1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f },
 };
 
-/*D3DVERTEXELEMENT9 velems[] =
-{
-	{ 0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
-	{ 0, 12, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 },
-	D3DDECL_END()
-};
-
-LPDIRECT3DVERTEXBUFFER9 vb;
-IDirect3DVertexDeclaration9 *vd9;*/
-
-	
 void DXImageBox::DXImageBox::InitD3D()
 {
 	// create a struct to hold information about the swap chain
@@ -195,7 +194,10 @@ void DXImageBox::DXImageBox::InitD3D()
 
 void DXImageBox::DXImageBox::SetData(array<Int16, 3>^ d)
 {
-	if (d == nullptr)
+	if (cvt != NULL)
+		cvt->Release();
+
+	if (d == nullptr || !d3d || !d3ddev)
 	{
 		cvt = NULL;
 		return;
@@ -274,11 +276,17 @@ void DXImageBox::DXImageBox::SetData(array<Int16, 3>^ d)
 	data_x = d->GetLength(2);
 	data_y = d->GetLength(1);
 	data_z = d->GetLength(0);
+
+	bv->tex_x_scale = (float)data_x;
+	bv->tex_x_offset = 0.0f;
+	bv->tex_y_scale = (float)data_y;
+	bv->tex_y_offset = 0.0f;
 }
 
 DXImageBox::DXImageBox::DXImageBox()
 {
 	bv = (BufferVars *)malloc(sizeof(BufferVars));
+	ZeroMemory(bv, sizeof(BufferVars));
 
 	bv->frame = 0;
 	bv->w = 1400.0f;
@@ -287,7 +295,6 @@ DXImageBox::DXImageBox::DXImageBox()
 	bv->ap_fl = 0;
 	bv->ap_ll = 0;
 	bv->ap_zs = 0;
-	
 
 	f = gcnew System::Drawing::Font("Arial", 14.0f);
 	fground = gcnew System::Drawing::SolidBrush(System::Drawing::Color::White);
@@ -351,8 +358,6 @@ void DXImageBox::DXImageBox::OnPaint(PaintEventArgs ^ e)
 	cb = cbuff;
 
 	/* Render scene */
-	//d3d->ClearRenderTargetView(bb, RGBA{ 0.0f, 0.2f, 0.4f, 1.0f });
-
 	UINT stride = sizeof(CUSTOMVERTEX);
 	UINT offset = 0;
 	ID3D11Buffer *pVBuffer = pVB;
@@ -361,6 +366,8 @@ void DXImageBox::DXImageBox::OnPaint(PaintEventArgs ^ e)
 	d3d->Draw(sizeof(vertices) / sizeof(CUSTOMVERTEX), 0);
 
 	sc->Present(0, 0);
+
+	cb->Release();
 }
 
 void DXImageBox::DXImageBox::OnPaintBackground(PaintEventArgs ^ e)
@@ -415,6 +422,8 @@ array <System::UInt32, 2> ^DXImageBox::DXImageBox::GetScreenshot()
 		}
 	}
 	d3d->Unmap(nt, 0);
+
+	nt->Release();
 
 	return ret;
 }
