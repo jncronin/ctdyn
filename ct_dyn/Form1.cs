@@ -239,7 +239,7 @@ namespace ct_dyn
                     load_datafile(di.FullName + "\\ctdyn.settings");
                 }
             }
-            catch(Exception)
+            catch(Exception e)
             {
                 listView1.Items.Clear();
             }
@@ -247,13 +247,18 @@ namespace ct_dyn
 
         private void load_datafile(string v)
         {
-            data_file = new System.IO.FileInfo(v);
+            System.IO.StreamReader sr = null;
 
-            var sr = data_file.OpenText();
-
-            while(!sr.EndOfStream)
+            try
             {
-                try
+                data_file = new System.IO.FileInfo(v);
+
+                var fs = new System.IO.FileStream(v, System.IO.FileMode.Open, System.IO.FileAccess.Read,
+                    System.IO.FileShare.None);
+
+                sr = new System.IO.StreamReader(fs);
+
+                while (!sr.EndOfStream)
                 {
                     int subj_idx = int.Parse(sr.ReadLine());
                     int ser_idx = int.Parse(sr.ReadLine());
@@ -262,42 +267,55 @@ namespace ct_dyn
                     int i = int.Parse(sr.ReadLine());
                     int e = int.Parse(sr.ReadLine());
                     int f_adjust = int.Parse(sr.ReadLine());
-                    bool is_pc = bool.Parse(sr.ReadLine());
-                    bool is_injured = bool.Parse(sr.ReadLine());
+                    int is_pc = int.Parse(sr.ReadLine());
+                    int is_injured = int.Parse(sr.ReadLine());
                     int fpb = int.Parse(sr.ReadLine());
                     int tinterval = int.Parse(sr.ReadLine());
+                    bool is_checked = bool.Parse(sr.ReadLine());
 
-                    foreach(MyListViewItem lvi in listView1.Items)
+                    foreach (MyListViewItem lvi in listView1.Items)
                     {
-                        if(lvi.sd.SubjectIndex == subj_idx &&
+                        if (lvi.sd.SubjectIndex == subj_idx &&
                             lvi.sd.SeriesIndex == ser_idx &&
                             lvi.sd.OtherIndex == oth_idx)
                         {
                             lvi.sd.bc.i = i;
                             lvi.sd.bc.e = e;
                             lvi.sd.bc.f_adjust = f_adjust;
-                            lvi.sd.bc.is_pc = is_pc ? 1 : 0;
-                            lvi.sd.bc.is_injured = is_injured ? 1 : 0;
+                            lvi.sd.bc.is_pc = is_pc;
+                            lvi.sd.bc.is_injured = is_injured;
                             lvi.sd.bc.fpb = fpb;
                             lvi.sd.bc.time_interval = tinterval;
+                            lvi.Checked = is_checked;
                         }
                     }
                 }
-                catch(Exception)
-                {
-                    return;
-                }
+            }
+            catch(System.IO.FileNotFoundException)
+            {
+                return;
+            }
+            catch(Exception e)
+            {
+                throw e;
+            }
+            finally
+            {
+                if(sr != null)
+                    sr.Close();
             }
         }
 
         private void persist_datafile()
         {
+            System.IO.StreamWriter sw = null;
             try
             {
                 if (data_file != null)
                 {
-                    var fs = data_file.OpenWrite();
-                    var sw = new System.IO.StreamWriter(fs);
+                    var fs = new System.IO.FileStream(data_file.FullName, System.IO.FileMode.Create,
+                        System.IO.FileAccess.Write, System.IO.FileShare.Read);
+                    sw = new System.IO.StreamWriter(fs);
 
                     foreach (MyListViewItem lvi in listView1.Items)
                     {
@@ -311,12 +329,18 @@ namespace ct_dyn
                         sw.WriteLine(lvi.sd.bc.is_injured.ToString());
                         sw.WriteLine(lvi.sd.bc.fpb.ToString());
                         sw.WriteLine(lvi.sd.bc.time_interval.ToString());
+                        sw.WriteLine(lvi.Checked.ToString());
                     }
-
-                    sw.Close();
                 }
             }
-            catch (Exception) { }
+            catch (Exception e)
+            {
+            }
+            finally
+            {
+                if (sw != null)
+                    sw.Close();
+            }
         }
 
         private void inputdir_TextChanged(object sender, EventArgs e)
@@ -608,6 +632,22 @@ namespace ct_dyn
             bmp.UnlockBits(bd);
 
             bmp.Save(fname);
+        }
+
+        private void btn_toggleall_Click(object sender, EventArgs e)
+        {
+            // decide if all checked
+            bool set_val = false;
+            foreach(MyListViewItem lvi in listView1.Items)
+            {
+                if (!lvi.Checked)
+                    set_val = true;
+            }
+
+            foreach(MyListViewItem lvi in listView1.Items)
+            {
+                lvi.Checked = set_val;
+            }
         }
     }
 }

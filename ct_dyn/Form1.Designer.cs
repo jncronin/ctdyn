@@ -79,6 +79,7 @@
             this.button2 = new System.Windows.Forms.Button();
             this.dxImageBox1 = new DXImageBox.DXImageBox();
             this.mldDisplay1 = new ct_dyn.MLDDisplay();
+            this.btn_toggleall = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
@@ -114,12 +115,14 @@
             // 
             // tableLayoutPanel2
             // 
-            this.tableLayoutPanel2.ColumnCount = 1;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel3, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.listView1, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel4, 0, 2);
-            this.tableLayoutPanel2.Controls.Add(this.button1, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.button1, 1, 3);
+            this.tableLayoutPanel2.Controls.Add(this.btn_toggleall, 0, 3);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(2, 2);
             this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(2);
@@ -136,6 +139,7 @@
             // 
             this.tableLayoutPanel3.AutoSize = true;
             this.tableLayoutPanel3.ColumnCount = 3;
+            this.tableLayoutPanel2.SetColumnSpan(this.tableLayoutPanel3, 2);
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -194,13 +198,14 @@
             this.columnHeader2,
             this.columnHeader3,
             this.columnHeader4});
+            this.tableLayoutPanel2.SetColumnSpan(this.listView1, 2);
             this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView1.FullRowSelect = true;
             this.listView1.Location = new System.Drawing.Point(2, 49);
             this.listView1.Margin = new System.Windows.Forms.Padding(2);
             this.listView1.MultiSelect = false;
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(557, 753);
+            this.listView1.Size = new System.Drawing.Size(557, 790);
             this.listView1.TabIndex = 1;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -226,6 +231,7 @@
             // 
             this.tableLayoutPanel4.AutoSize = true;
             this.tableLayoutPanel4.ColumnCount = 3;
+            this.tableLayoutPanel2.SetColumnSpan(this.tableLayoutPanel4, 2);
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -233,7 +239,7 @@
             this.tableLayoutPanel4.Controls.Add(this.outputfile, 1, 0);
             this.tableLayoutPanel4.Controls.Add(this.outputfilebtn, 2, 0);
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Top;
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(2, 806);
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(2, 843);
             this.tableLayoutPanel4.Margin = new System.Windows.Forms.Padding(2);
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.RowCount = 1;
@@ -279,10 +285,10 @@
             // 
             this.button1.AutoSize = true;
             this.button1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.button1.Location = new System.Drawing.Point(2, 853);
+            this.button1.Location = new System.Drawing.Point(282, 890);
             this.button1.Margin = new System.Windows.Forms.Padding(2);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(557, 87);
+            this.button1.Size = new System.Drawing.Size(277, 50);
             this.button1.TabIndex = 3;
             this.button1.Text = "Do Analysis";
             this.button1.UseVisualStyleBackColor = true;
@@ -767,6 +773,18 @@
             this.mldDisplay1.TabIndex = 0;
             this.mldDisplay1.Text = "mldDisplay1";
             // 
+            // btn_toggleall
+            // 
+            this.btn_toggleall.AutoSize = true;
+            this.btn_toggleall.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btn_toggleall.Location = new System.Drawing.Point(3, 891);
+            this.btn_toggleall.Name = "btn_toggleall";
+            this.btn_toggleall.Size = new System.Drawing.Size(274, 48);
+            this.btn_toggleall.TabIndex = 4;
+            this.btn_toggleall.Text = "Select/Deselect All";
+            this.btn_toggleall.UseVisualStyleBackColor = true;
+            this.btn_toggleall.Click += new System.EventHandler(this.btn_toggleall_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 29F);
@@ -855,6 +873,7 @@
         private System.Windows.Forms.TextBox tb_level;
         private System.Windows.Forms.TextBox tb_opacity;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button btn_toggleall;
     }
 }
 

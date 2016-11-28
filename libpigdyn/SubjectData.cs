@@ -56,6 +56,8 @@ namespace libctdyn
                 try
                 {
                     var subj_match = subj.Match(subject_name);
+                    if (!subj_match.Success)
+                        return 0;
                     return int.Parse(subj_match.Groups[1].Value);
                 }
                 catch(Exception)
@@ -71,7 +73,11 @@ namespace libctdyn
             {
                 try
                 {
-                    return int.Parse(series_name);
+                    int val;
+                    if (int.TryParse(series_name, out val))
+                        return val;
+                    else
+                        return 0;
                 }
                 catch (Exception)
                 {
@@ -87,6 +93,8 @@ namespace libctdyn
                 try
                 {
                     var other_match = dyn.Match(source_name);
+                    if (!other_match.Success)
+                        return 0;
                     return int.Parse(other_match.Groups[1].Value);
                 }
                 catch (Exception)
