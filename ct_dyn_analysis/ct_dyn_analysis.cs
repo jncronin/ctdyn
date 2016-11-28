@@ -26,7 +26,7 @@ using System.Linq;
 using System.Text;
 using Mono.Options;
 
-namespace pig_dyn_analysis
+namespace ct_dyn_analysis
 {
     class ct_dyn_analysis
     {
@@ -65,7 +65,7 @@ namespace pig_dyn_analysis
 
         private static void ShowHelp(OptionSet p)
         {
-            Console.WriteLine("Usage: pig_dyn_analysis [options] -o output_file -d input_file_dir");
+            Console.WriteLine("Usage: ct_dyn_analysis [options] -o output_file -d input_file_dir");
             Console.WriteLine();
             Console.WriteLine("Options: ");
             p.WriteOptionDescriptions(Console.Out);

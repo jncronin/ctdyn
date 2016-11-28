@@ -329,6 +329,9 @@ namespace ct_dyn
 
         private void persist_datafile()
         {
+            if (listView1.Items.Count == 0)
+                return;
+
             System.IO.StreamWriter sw = null;
             try
             {
