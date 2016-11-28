@@ -124,10 +124,10 @@ namespace libctdyn
 
         public override void OutputSlice(StreamWriter sw, short[,] slice, int z, int f_index, SubjectData pd)
         {
-            // parse pig data
-            var pig_match = pig.Match(pd.pig_name);
+            // parse subject data
+            var pig_match = pig.Match(pd.subject_name);
             var dyn_match = dyn.Match(pd.source_name);
-            string breath_id = "PIG" + pig_match.Groups[1].Value + "S" + pd.series_name + "Dyn" + dyn_match.Groups[1].Value;
+            string breath_id = "Subj" + pig_match.Groups[1].Value + "S" + pd.series_name + "Dyn" + dyn_match.Groups[1].Value;
 
             // Determine breath characteristics
             BreathCharacteristics bc = null;

@@ -54,7 +54,7 @@ namespace libctdyn
             pd.source_name = ReadString(br);
             pd.acquisition_datetime = ReadString(br);
             pd.series_name = ReadString(br);
-            pd.pig_name = ReadString(br);
+            pd.subject_name = ReadString(br);
 
             return pd;
         }
@@ -73,7 +73,7 @@ namespace libctdyn
             pd.source_name = ReadString(br);
             pd.acquisition_datetime = ReadString(br);
             pd.series_name = ReadString(br);
-            pd.pig_name = ReadString(br);
+            pd.subject_name = ReadString(br);
 
             long data_start = br.BaseStream.Position;
 
@@ -133,16 +133,16 @@ namespace libctdyn
                 pd.source_name = ReadString(br);
                 pd.acquisition_datetime = ReadString(br);
                 pd.series_name = ReadString(br);
-                pd.pig_name = ReadString(br);
+                pd.subject_name = ReadString(br);
 
                 long data_start = br.BaseStream.Position;
 
                 // Build list of actual frame indices
                 List<int> f_indices = new List<int>();
                 int f_adjust = 0;
-                var pig_match = SubjectInfo.pig.Match(pd.pig_name);
+                var pig_match = SubjectInfo.pig.Match(pd.subject_name);
                 var dyn_match = SubjectInfo.dyn.Match(pd.source_name);
-                string breath_id = "PIG" + pig_match.Groups[1].Value + "S" + pd.series_name + "Dyn" + dyn_match.Groups[1].Value;
+                string breath_id = "Subj" + pig_match.Groups[1].Value + "S" + pd.series_name + "Dyn" + dyn_match.Groups[1].Value;
                 SubjectInfo.BreathCharacteristics bc;
                 if (SubjectInfo.chars.TryGetValue(breath_id, out bc))
                     f_adjust = bc.f_adjust;

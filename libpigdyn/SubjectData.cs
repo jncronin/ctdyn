@@ -32,7 +32,89 @@ namespace libctdyn
         public string source_name;
         public string acquisition_datetime;
         public string series_name;
-        public string pig_name;
+        public string subject_name;
+
+        internal static System.Text.RegularExpressions.Regex subj, dyn;
+
+        static SubjectData()
+        {
+            subj = new System.Text.RegularExpressions.Regex(@"^[^0-9]*([0-9]+)");
+            dyn = new System.Text.RegularExpressions.Regex(@"^[^0-9]*([0-9]+)");
+        }
+
+        public int SubjectIndex
+        {
+            get
+            {
+                try
+                {
+                    var subj_match = subj.Match(subject_name);
+                    return int.Parse(subj_match.Groups[1].Value);
+                }
+                catch(Exception)
+                {
+                    return 0;
+                }
+            }
+        }
+
+        public int SeriesIndex
+        {
+            get
+            {
+                try
+                {
+                    return int.Parse(series_name);
+                }
+                catch (Exception)
+                {
+                    return 0;
+                }
+            }
+        }
+
+        public int OtherIndex
+        {
+            get
+            {
+                try
+                {
+                    var other_match = dyn.Match(source_name);
+                    return int.Parse(other_match.Groups[1].Value);
+                }
+                catch (Exception)
+                {
+                    return 0;
+                }
+            }
+        }
+
+        public string Name
+        {
+            get
+            {
+                return "Subj" + SubjectIndex.ToString() + "S" + SeriesIndex.ToString() + "Dyn" + OtherIndex.ToString();
+            }
+        }
+
+        public DateTime? AcquisitionTime
+        {
+            get
+            {
+                var at = acquisition_datetime;
+                try
+                {
+                    DateTime dt = new DateTime(int.Parse(at.Substring(0, 4)), int.Parse(at.Substring(4, 2)), int.Parse(at.Substring(6, 2)),
+                        int.Parse(at.Substring(8, 2)), int.Parse(at.Substring(10, 2)), int.Parse(at.Substring(12, 2)),
+                        int.Parse(at.Substring(15, 3)));
+                    return dt;
+                }
+                catch(Exception)
+                {
+                    return null;
+                }
+            }
+        }
 
         public int[] dimensions = new int[3];
         public double[] spacing = new double[3];

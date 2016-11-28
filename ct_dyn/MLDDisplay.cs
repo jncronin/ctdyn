@@ -11,7 +11,7 @@ namespace ct_dyn
     {
         System.Drawing.Font f;
         System.Drawing.Brush bground, fground;
-        System.Drawing.Pen p;
+        System.Drawing.Pen p, p2;
 
         int[] points = null;
         int max_pt = -1000;
@@ -27,6 +27,7 @@ namespace ct_dyn
             fground = new System.Drawing.SolidBrush(System.Drawing.Color.Black);
             f = new System.Drawing.Font("Arial", 14.0f);
             p = new System.Drawing.Pen(fground, 1.0f);
+            p2 = new System.Drawing.Pen(fground, 3.0f);
         }
 
         public int I { get { return i; } set { i = value; Invalidate(); } }
@@ -67,7 +68,8 @@ namespace ct_dyn
                             }
                         }
 
-                        count = count / items;
+                        if(items > 0)
+                            count = count / items;
 
                         points[z] = (int)count;
 
@@ -80,6 +82,12 @@ namespace ct_dyn
 
                 Invalidate();
             }
+        }
+
+        protected override void OnResize(EventArgs e)
+        {
+            this.Invalidate();
+            base.OnResize(e);
         }
 
         protected override void OnPaintBackground(PaintEventArgs pevent)
@@ -113,6 +121,10 @@ namespace ct_dyn
                     int prev_x = (idx - 1) * ClientSize.Width / points.Length;
 
                     eargs.Graphics.DrawLine(p, prev_x, prev_pt, cur_x, cur_pt);
+                    eargs.Graphics.FillEllipse(fground, prev_x - 2, prev_pt - 2, 5, 5);
+                    eargs.Graphics.FillEllipse(fground, cur_x - 2, cur_pt - 2, 5, 5);
+                    //eargs.Graphics.DrawLine(p2, prev_x, prev_pt, prev_x, prev_pt + 1);
+                    //eargs.Graphics.DrawLine(p2, cur_x, cur_pt, cur_x, cur_pt + 1);
                 }
 
                 int ie_line1 = ClientSize.Width * i / (i + e) / 2;

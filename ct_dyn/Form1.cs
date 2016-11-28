@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -12,6 +13,8 @@ namespace ct_dyn
 {
     public partial class Form1 : Form
     {
+        System.IO.FileInfo data_file = null;
+
         public Form1()
         {
             InitializeComponent();
@@ -48,7 +51,9 @@ namespace ct_dyn
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            inputdir.Text = Properties.Settings.Default.InputPath;
+            outputfile.Text = Properties.Settings.Default.OutputPath;
+            dir_changed();
         }
 
         private void tableLayoutPanel5_Paint(object sender, PaintEventArgs e)
@@ -91,7 +96,7 @@ namespace ct_dyn
 
         private void dxImageBox1_MouseMove(object sender, MouseEventArgs e)
         {
-            if(e.Button == MouseButtons.Left)
+            if (e.Button == MouseButtons.Left)
             {
                 int diff_x = e.X - mouse_x;
                 int diff_y = e.Y - mouse_y;
@@ -116,7 +121,7 @@ namespace ct_dyn
                 tb_l.Value = new_l;
 
                 dxImageBox1.Window = new_w;
-                dxImageBox1.Level = new_l;  
+                dxImageBox1.Level = new_l;
             }
         }
 
@@ -169,36 +174,132 @@ namespace ct_dyn
         {
             public System.IO.FileInfo fi;
             public libctdyn.SubjectData sd;
+
+            public int i = 1;
+            public int e = 2;
+            public int f_adjust = 0;
+
+            public bool is_pc = false;
+            public bool is_injured = false;
         }
 
         void dir_changed()
         {
+            persist_datafile();
+
             var dir = inputdir.Text;
-            var di = new System.IO.DirectoryInfo(dir);
-            if(di.Exists)
+
+            try
             {
-                var files = libctdyn.libctdyn.GetFilesInDir(di.FullName);
-
-                listView1.Items.Clear();
-
-                foreach(var file in files)
+                var di = new System.IO.DirectoryInfo(dir);
+                if (di.Exists)
                 {
-                    var sd = libctdyn.libctdyn.LoadSubjectData(file);
+                    var files = libctdyn.libctdyn.GetFilesInDir(di.FullName);
 
-                    var lvi = new MyListViewItem();
-                    lvi.fi = file;
-                    lvi.sd = sd;
-                    lvi.Text = sd.pig_name;
+                    listView1.Items.Clear();
 
-                    lvi.SubItems.Add(sd.series_name);
-                    lvi.SubItems.Add(sd.acquisition_datetime.Substring(0, 8));
-                    lvi.SubItems.Add(sd.acquisition_datetime.Substring(8, 6));
+                    foreach (var file in files)
+                    {
+                        var sd = libctdyn.libctdyn.LoadSubjectData(file);
 
-                    lvi.Checked = true;
+                        var lvi = new MyListViewItem();
+                        lvi.fi = file;
+                        lvi.sd = sd;
+                        lvi.Text = sd.subject_name;
 
-                    listView1.Items.Add(lvi);
+                        lvi.SubItems.Add(sd.series_name);
+
+                        if (sd.AcquisitionTime.HasValue)
+                        {
+                            lvi.SubItems.Add(sd.AcquisitionTime.Value.ToShortDateString());
+                            lvi.SubItems.Add(sd.AcquisitionTime.Value.ToLongTimeString());
+                        }
+                        else
+                        {
+                            lvi.SubItems.Add("");
+                            lvi.SubItems.Add("");
+                        }
+
+                        lvi.Checked = true;
+
+                        listView1.Items.Add(lvi);
+                    }
+
+                    load_datafile(di.FullName + "\\cydyn.settings");
                 }
             }
+            catch(Exception)
+            {
+                listView1.Items.Clear();
+            }
+        }
+
+        private void load_datafile(string v)
+        {
+            data_file = new System.IO.FileInfo(v);
+
+            var sr = data_file.OpenText();
+
+            while(!sr.EndOfStream)
+            {
+                try
+                {
+                    int subj_idx = int.Parse(sr.ReadLine());
+                    int ser_idx = int.Parse(sr.ReadLine());
+                    int oth_idx = int.Parse(sr.ReadLine());
+
+                    int i = int.Parse(sr.ReadLine());
+                    int e = int.Parse(sr.ReadLine());
+                    int f_adjust = int.Parse(sr.ReadLine());
+                    bool is_pc = bool.Parse(sr.ReadLine());
+                    bool is_injured = bool.Parse(sr.ReadLine());
+
+                    foreach(MyListViewItem lvi in listView1.Items)
+                    {
+                        if(lvi.sd.SubjectIndex == subj_idx &&
+                            lvi.sd.SeriesIndex == ser_idx &&
+                            lvi.sd.OtherIndex == oth_idx)
+                        {
+                            lvi.i = i;
+                            lvi.e = e;
+                            lvi.f_adjust = f_adjust;
+                            lvi.is_pc = is_pc;
+                            lvi.is_injured = is_injured;
+                        }
+                    }
+                }
+                catch(Exception)
+                {
+                    return;
+                }
+            }
+        }
+
+        private void persist_datafile()
+        {
+            try
+            {
+                if (data_file != null)
+                {
+                    var fs = data_file.OpenWrite();
+                    var sw = new System.IO.StreamWriter(fs);
+
+                    foreach (MyListViewItem lvi in listView1.Items)
+                    {
+                        sw.WriteLine(lvi.sd.SubjectIndex.ToString());
+                        sw.WriteLine(lvi.sd.SeriesIndex.ToString());
+                        sw.WriteLine(lvi.sd.OtherIndex.ToString());
+                        sw.WriteLine(lvi.i.ToString());
+                        sw.WriteLine(lvi.e.ToString());
+                        sw.WriteLine(lvi.f_adjust.ToString());
+                        sw.WriteLine(lvi.is_pc.ToString());
+                        sw.WriteLine(lvi.is_injured.ToString());
+                    }
+
+                    sw.Close();
+                }
+            }
+            catch (Exception) { }
         }
 
         private void inputdir_TextChanged(object sender, EventArgs e)
@@ -213,6 +314,7 @@ namespace ct_dyn
             {
                 dxImageBox1.ImageData = null;
                 mldDisplay1.ImageData = null;
+                lab_name.Text = "NONE";
             }
             else
             {
@@ -222,6 +324,7 @@ namespace ct_dyn
                 {
                     dxImageBox1.ImageData = null;
                     mldDisplay1.ImageData = null;
+                    lab_name.Text = "NONE";
                 }
                 else
                 {
@@ -233,6 +336,24 @@ namespace ct_dyn
                     tb_frame.Maximum = sd.dimensions[2] - 1;
                     tb_w.Value = dxImageBox1.Window;
                     tb_l.Value = dxImageBox1.Level;
+
+                    if (sia.i == 1 && sia.e == 2)
+                        cb_ie.SelectedIndex = 0;
+                    else if (sia.i == 2 && sia.e == 1)
+                        cb_ie.SelectedIndex = 1;
+                    else if (sia.i == 1 && sia.e == 4)
+                        cb_ie.SelectedIndex = 2;
+                    else if (sia.i == 4 && sia.e == 1)
+                        cb_ie.SelectedIndex = 3;
+                    else
+                        cb_ie.SelectedIndex = -1;
+
+                    tb_fa.Text = sia.f_adjust.ToString();
+
+                    cb_pc.Checked = sia.is_pc;
+                    cb_injured.Checked = sia.is_injured;
+
+                    lab_name.Text = sd.Name;
 
                     mldDisplay1.ImageData = id;
                 }
@@ -257,9 +378,12 @@ namespace ct_dyn
         private void tb_fa_TextChanged(object sender, EventArgs e)
         {
             int val;
-            if(int.TryParse(tb_fa.Text, out val))
+            if (int.TryParse(tb_fa.Text, out val))
             {
                 mldDisplay1.FrameAdjust = val;
+
+                if (listView1.SelectedItems.Count > 0)
+                    ((MyListViewItem)listView1.SelectedItems[0]).f_adjust = val;
             }
         }
 
@@ -270,7 +394,7 @@ namespace ct_dyn
 
         private void cb_ie_SelectedIndexChanged(object sender, EventArgs e)
         {
-            switch(cb_ie.SelectedIndex)
+            switch (cb_ie.SelectedIndex)
             {
                 case 0:
                     mldDisplay1.I = 1;
@@ -289,6 +413,37 @@ namespace ct_dyn
                     mldDisplay1.E = 1;
                     break;
             }
+
+            if (listView1.SelectedItems.Count > 0)
+            {
+                ((MyListViewItem)listView1.SelectedItems[0]).i = mldDisplay1.I;
+                ((MyListViewItem)listView1.SelectedItems[0]).e = mldDisplay1.E;
+            }
+        }
+
+        private void cb_pc_CheckedChanged(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+                ((MyListViewItem)listView1.SelectedItems[0]).is_pc = cb_pc.Checked;
+        }
+
+        private void cb_injured_CheckedChanged(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+                ((MyListViewItem)listView1.SelectedItems[0]).is_injured = cb_injured.Checked;
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            persist_datafile();
+            Properties.Settings.Default.InputPath = inputdir.Text;
+            Properties.Settings.Default.OutputPath = outputfile.Text;
+            Properties.Settings.Default.Save();
+        }
+
+        private void dxImageBox1_Resize(object sender, EventArgs e)
+        {
+            dxImageBox1.Invalidate();
         }
     }
 }
