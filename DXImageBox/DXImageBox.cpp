@@ -69,7 +69,7 @@ void DXImageBox::DXImageBox::InitD3D()
 	scd.BufferDesc.Height = 5120;
 	scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;      // how swap chain is to be used
 	scd.OutputWindow = (HWND)Handle.ToPointer();            // the window to be used
-	scd.SampleDesc.Count = 4;                               // how many multisamples
+	scd.SampleDesc.Count = 1;                               // how many multisamples
 	scd.Windowed = TRUE;                                    // windowed/full-screen mode
 
 	IDXGISwapChain *swapchain;             // the pointer to the swap chain interface
@@ -105,7 +105,8 @@ void DXImageBox::DXImageBox::InitD3D()
 	auto crtverr = dev->CreateRenderTargetView(pBackBuffer, NULL, &backbuffer);
 	TEST(crtverr, "CreateRenderTargetView");
 	bb = backbuffer;
-	pBackBuffer->Release();
+	bbt = pBackBuffer;
+	//pBackBuffer->Release();
 
 	// set the render target as the back buffer
 	devcon->OMSetRenderTargets(1, &backbuffer, NULL);
@@ -270,6 +271,9 @@ void DXImageBox::DXImageBox::SetData(array<Int16, 3>^ d)
 	d3d->PSSetShaderResources(0, 1, srv);
 
 	cvt = vt;
+	data_x = d->GetLength(2);
+	data_y = d->GetLength(1);
+	data_z = d->GetLength(0);
 }
 
 DXImageBox::DXImageBox::DXImageBox()
@@ -366,4 +370,51 @@ void DXImageBox::DXImageBox::OnPaintBackground(PaintEventArgs ^ e)
 void DXImageBox::DXImageBox::OnCreateControl()
 {
 	InitD3D();
+}
+
+array <System::UInt32, 2> ^DXImageBox::DXImageBox::GetScreenshot()
+{
+	if (!d3d || !d3ddev || !bbt)
+		return nullptr;
+
+	// Create new texture to hold current backbuffer
+	D3D11_TEXTURE2D_DESC bbtdesc;
+	ZeroMemory(&bbtdesc, sizeof(bbtdesc));
+	bbt->GetDesc(&bbtdesc);
+
+	D3D11_TEXTURE2D_DESC ntdesc;
+	ZeroMemory(&ntdesc, sizeof(ntdesc));
+	ntdesc.ArraySize = 1;
+	ntdesc.BindFlags = 0;
+	ntdesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+	ntdesc.Format = bbtdesc.Format;
+	ntdesc.Height = bbtdesc.Height;
+	ntdesc.MipLevels = bbtdesc.MipLevels;
+	ntdesc.SampleDesc.Count = 1;
+	ntdesc.Usage = D3D11_USAGE_STAGING;
+	ntdesc.Width = bbtdesc.Width;
+
+	ID3D11Texture2D *nt;
+	auto cterr = d3ddev->CreateTexture2D(&ntdesc, NULL, &nt);
+
+	d3d->CopyResource(nt, bbt);
+
+	D3D11_MAPPED_SUBRESOURCE msr;
+	auto maperr = d3d->Map(nt, 0, D3D11_MAP_READ, 0, &msr);
+
+	auto ret = gcnew array<System::UInt32, 2>(data_y, data_x);
+	UINT xdiff = ntdesc.Width / data_x;
+	UINT ydiff = ntdesc.Height / data_y;
+	for (int y = 0; y < data_y; y++)
+	{
+		uint32_t *cur_row = (uint32_t *)((char *)msr.pData + y * msr.RowPitch * ydiff);
+		for (int x = 0; x < data_x; x++)
+		{
+			uint32_t cur_val = cur_row[x * xdiff];
+			ret[y, x] = cur_val;
+		}
+	}
+	d3d->Unmap(nt, 0);
+
+	return ret;
 }

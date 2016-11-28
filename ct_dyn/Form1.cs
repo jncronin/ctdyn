@@ -54,6 +54,11 @@ namespace ct_dyn
             inputdir.Text = Properties.Settings.Default.InputPath;
             outputfile.Text = Properties.Settings.Default.OutputPath;
             dir_changed();
+
+            tb_opacity.Text = tb_thresh.Value.ToString();
+            tb_window.Text = tb_w.Value.ToString();
+            tb_level.Text = tb_l.Value.ToString();
+            tb_slice.Text = tb_frame.Value.ToString();
         }
 
         private void tableLayoutPanel5_Paint(object sender, PaintEventArgs e)
@@ -64,16 +69,20 @@ namespace ct_dyn
         private void tb_frame_Scroll(object sender, EventArgs e)
         {
             dxImageBox1.Frame = tb_frame.Value;
+            tb_slice.Text = tb_frame.Value.ToString();
+            mldDisplay1.Marker = tb_frame.Value;
         }
 
         private void tb_w_Scroll(object sender, EventArgs e)
         {
             dxImageBox1.Window = tb_w.Value;
+            tb_window.Text = tb_w.Value.ToString();
         }
 
         private void tb_l_Scroll(object sender, EventArgs e)
         {
             dxImageBox1.Level = tb_l.Value;
+            tb_level.Text = tb_l.Value.ToString();
         }
 
         int mouse_x;
@@ -92,6 +101,8 @@ namespace ct_dyn
 
             tb_frame.Value = new_z;
             dxImageBox1.Frame = new_z;
+            tb_slice.Text = new_z.ToString();
+            mldDisplay1.Marker = new_z;
         }
 
         private void dxImageBox1_MouseMove(object sender, MouseEventArgs e)
@@ -122,6 +133,9 @@ namespace ct_dyn
 
                 dxImageBox1.Window = new_w;
                 dxImageBox1.Level = new_l;
+
+                tb_window.Text = new_w.ToString();
+                tb_level.Text = new_l.ToString();
             }
         }
 
@@ -136,8 +150,11 @@ namespace ct_dyn
             tb_w.Value = 1400;
             tb_l.Value = -500;
 
-            dxImageBox1.Window = 1400;
-            dxImageBox1.Level = -500;
+            dxImageBox1.Window = tb_w.Value;
+            dxImageBox1.Level = tb_l.Value;
+
+            tb_window.Text = tb_w.Value.ToString();
+            tb_level.Text = tb_l.Value.ToString();
         }
 
         private void cb_thresholds_CheckedChanged(object sender, EventArgs e)
@@ -162,6 +179,7 @@ namespace ct_dyn
 
         private void tb_thresh_Scroll_1(object sender, EventArgs e)
         {
+            tb_opacity.Text = tb_thresh.Value.ToString();
             thresh_changed();
         }
 
@@ -333,8 +351,13 @@ namespace ct_dyn
                     dxImageBox1.Frame = 0;
                     tb_frame.Value = 0;
                     tb_frame.Maximum = sd.dimensions[2] - 1;
+                    tb_slice.Text = "0";
+
                     tb_w.Value = dxImageBox1.Window;
+                    tb_window.Text = tb_w.Value.ToString();
+
                     tb_l.Value = dxImageBox1.Level;
+                    tb_level.Text = tb_l.Value.ToString();
 
                     if (sia.sd.bc.i == 1 && sia.sd.bc.e == 2)
                         cb_ie.SelectedIndex = 0;
@@ -471,6 +494,120 @@ namespace ct_dyn
                 if (listView1.SelectedItems.Count > 0)
                     ((MyListViewItem)listView1.SelectedItems[0]).sd.bc.time_interval = val;
             }
+        }
+
+        private void tb_slice_TextChanged(object sender, EventArgs e)
+        {
+            int val;
+            if (int.TryParse(tb_slice.Text, out val))
+            {
+                if (val >= tb_frame.Minimum && val <= tb_frame.Maximum)
+                {
+                    tb_frame.Value = val;
+                    dxImageBox1.Frame = val;
+                    mldDisplay1.Marker = val;
+                }
+            }
+        }
+
+        private void tb_window_TextChanged(object sender, EventArgs e)
+        {
+            int val;
+            if (int.TryParse(tb_window.Text, out val))
+            {
+                if (val >= tb_w.Minimum && val <= tb_w.Maximum)
+                {
+                    tb_w.Value = val;
+                    dxImageBox1.Window = val;
+                }
+            }
+        }
+
+        private void tb_level_TextChanged(object sender, EventArgs e)
+        {
+            int val;
+            if (int.TryParse(tb_level.Text, out val))
+            {
+                if (val >= tb_l.Minimum && val <= tb_l.Maximum)
+                {
+                    tb_l.Value = val;
+                    dxImageBox1.Level = val;
+                }
+            }
+        }
+
+        private void tb_opacity_TextChanged(object sender, EventArgs e)
+        {
+            int val;
+            if(int.TryParse(tb_opacity.Text, out val))
+            {
+                if(val >= tb_thresh.Minimum && val <= tb_thresh.Maximum)
+                {
+                    tb_thresh.Value = val;
+                    thresh_changed();
+                }
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs eargs)
+        {
+            var fp = new SaveFileDialog();
+            fp.Filter = "Portable Network Graphic|*.png";
+            fp.ShowDialog();
+
+            string fname;
+
+            try
+            {
+                fname = fp.FileName;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Error");
+                return;
+            }
+
+            var ss = dxImageBox1.GetScreenshot();
+
+            if(ss == null)
+            {
+                MessageBox.Show("Unable to get screenshot", "Error");
+                return;
+            }
+
+            Bitmap bmp = new Bitmap(ss.GetLength(1), ss.GetLength(0),
+                System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            var bd = bmp.LockBits(new Rectangle(0, 0, ss.GetLength(1), ss.GetLength(0)),
+                System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            for(int y = 0; y < ss.GetLength(0); y++)
+            {
+                unsafe
+                {
+                    uint* destPtr = (uint*)(bd.Scan0 + y * bd.Stride);
+                    fixed(uint *srcPtr = &ss[y, 0])
+                    {
+                        for (int x = 0; x < ss.GetLength(1); x++)
+                        {
+                            var val = srcPtr[x];
+
+                            // flip blue and red (ABGR->ARGB)
+                            uint a = val >> 24;
+                            uint b = (val >> 16) & 0xffU;
+                            uint g = (val >> 8) & 0xffU;
+                            uint r = val & 0xffU;
+                            uint newval = (a << 24) | (r << 16) | (g << 8) | b;
+
+                            destPtr[x] = newval;
+                        }
+                    }
+                }
+            }
+
+            bmp.UnlockBits(bd);
+
+            bmp.Save(fname);
         }
     }
 }

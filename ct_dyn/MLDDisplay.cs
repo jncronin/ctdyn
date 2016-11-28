@@ -11,7 +11,7 @@ namespace ct_dyn
     {
         System.Drawing.Font f;
         System.Drawing.Brush bground, fground;
-        System.Drawing.Pen p, p2;
+        System.Drawing.Pen p, p2, p3;
 
         int[] points = null;
         int max_pt = -1000;
@@ -19,6 +19,7 @@ namespace ct_dyn
         int i = 1;
         int e = 2;
         int fpb = 20;
+        int marker = 0;
 
         int fa = 0;
 
@@ -30,12 +31,15 @@ namespace ct_dyn
             p = new System.Drawing.Pen(fground, 1.0f);
             p2 = new System.Drawing.Pen(fground, 1.0f);
             p2.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
+            p3 = new System.Drawing.Pen(System.Drawing.Color.DarkBlue, 1.0f);
+            p3.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
         }
 
         public int I { get { return i; } set { i = value; Invalidate(); } }
         public int E { get { return e; } set { e = value; Invalidate(); } }
         public int FrameAdjust { get { return fa; } set { fa = value; Invalidate(); } }
         public int FramesPerBreath { get { return fpb; } set { fpb = value; Invalidate(); } }
+        public int Marker { get { return marker; } set { marker = value; Invalidate(); } }
 
         public short[,,] ImageData
         {
@@ -136,6 +140,9 @@ namespace ct_dyn
                     int ie_line = start_x + i * fpb * ClientSize.Width / (i + e) / points.Length;
                     eargs.Graphics.DrawLine(p2, ie_line, 0, ie_line, ClientSize.Height);
                 }
+
+                int marker_x = ClientSize.Width * marker / points.Length;
+                eargs.Graphics.DrawLine(p3, marker_x, 0, marker_x, ClientSize.Height);
             }
         }
     }

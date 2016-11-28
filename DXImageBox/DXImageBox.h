@@ -33,6 +33,7 @@ namespace DXImageBox {
 		IDXGISwapChain *sc;
 		ID3D11Buffer *pVB;
 		ID3D11Texture3D *cvt;
+		ID3D11Texture2D *bbt;
 
 		ID3D11Buffer *cb = NULL;
 
@@ -41,6 +42,8 @@ namespace DXImageBox {
 
 		BufferVars *bv;
 		uint32_t *ap_fl, *ap_ll, *ap_zs;
+
+		int data_x, data_y, data_z;
 
 		System::String ^err_str = nullptr;
 
@@ -57,5 +60,7 @@ namespace DXImageBox {
 		property Int32 Window { Int32 get() { return (int)bv->w; } void set(Int32 v) { bv->w = (float)v; Invalidate(); } }
 		property Int32 Level { Int32 get() { return (int)bv->l; } void set(Int32 v) { bv->l = (float)v; Invalidate(); } }
 		property Int32 Frame { Int32 get() { return bv->frame; } void set(Int32 v) { bv->frame = v; Invalidate(); } }
+
+		virtual array<System::UInt32, 2> ^GetScreenshot();
 	};
 }

@@ -68,12 +68,17 @@
             this.cb_injured = new System.Windows.Forms.CheckBox();
             this.label5 = new System.Windows.Forms.Label();
             this.lab_name = new System.Windows.Forms.Label();
-            this.dxImageBox1 = new DXImageBox.DXImageBox();
-            this.mldDisplay1 = new ct_dyn.MLDDisplay();
             this.label10 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.tb_fpb = new System.Windows.Forms.TextBox();
             this.tb_tinterval = new System.Windows.Forms.TextBox();
+            this.tb_slice = new System.Windows.Forms.TextBox();
+            this.tb_window = new System.Windows.Forms.TextBox();
+            this.tb_level = new System.Windows.Forms.TextBox();
+            this.tb_opacity = new System.Windows.Forms.TextBox();
+            this.button2 = new System.Windows.Forms.Button();
+            this.dxImageBox1 = new DXImageBox.DXImageBox();
+            this.mldDisplay1 = new ct_dyn.MLDDisplay();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
@@ -285,9 +290,10 @@
             // 
             // tableLayoutPanel5
             // 
-            this.tableLayoutPanel5.ColumnCount = 2;
+            this.tableLayoutPanel5.ColumnCount = 3;
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 66.66666F));
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel5.Controls.Add(this.tb_thresh, 1, 5);
             this.tableLayoutPanel5.Controls.Add(this.tb_l, 1, 4);
             this.tableLayoutPanel5.Controls.Add(this.tb_w, 1, 3);
@@ -298,12 +304,18 @@
             this.tableLayoutPanel5.Controls.Add(this.label7, 0, 3);
             this.tableLayoutPanel5.Controls.Add(this.label8, 0, 4);
             this.tableLayoutPanel5.Controls.Add(this.label9, 0, 5);
+            this.tableLayoutPanel5.Controls.Add(this.tb_slice, 2, 2);
+            this.tableLayoutPanel5.Controls.Add(this.tb_window, 2, 3);
+            this.tableLayoutPanel5.Controls.Add(this.button2, 1, 6);
+            this.tableLayoutPanel5.Controls.Add(this.tb_level, 2, 4);
+            this.tableLayoutPanel5.Controls.Add(this.tb_opacity, 2, 5);
             this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel5.Location = new System.Drawing.Point(567, 2);
             this.tableLayoutPanel5.Margin = new System.Windows.Forms.Padding(2);
             this.tableLayoutPanel5.Name = "tableLayoutPanel5";
-            this.tableLayoutPanel5.RowCount = 6;
+            this.tableLayoutPanel5.RowCount = 7;
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -315,12 +327,13 @@
             // 
             // tb_thresh
             // 
+            this.tb_thresh.AutoSize = false;
             this.tb_thresh.Dock = System.Windows.Forms.DockStyle.Top;
-            this.tb_thresh.Location = new System.Drawing.Point(196, 839);
+            this.tb_thresh.Location = new System.Drawing.Point(196, 836);
             this.tb_thresh.Margin = new System.Windows.Forms.Padding(2);
             this.tb_thresh.Maximum = 100;
             this.tb_thresh.Name = "tb_thresh";
-            this.tb_thresh.Size = new System.Drawing.Size(545, 101);
+            this.tb_thresh.Size = new System.Drawing.Size(361, 52);
             this.tb_thresh.TabIndex = 8;
             this.tb_thresh.TickFrequency = 10;
             this.tb_thresh.Value = 60;
@@ -330,12 +343,12 @@
             // 
             this.tb_l.AutoSize = false;
             this.tb_l.Dock = System.Windows.Forms.DockStyle.Top;
-            this.tb_l.Location = new System.Drawing.Point(196, 735);
+            this.tb_l.Location = new System.Drawing.Point(196, 780);
             this.tb_l.Margin = new System.Windows.Forms.Padding(2);
             this.tb_l.Maximum = 2000;
             this.tb_l.Minimum = -2000;
             this.tb_l.Name = "tb_l";
-            this.tb_l.Size = new System.Drawing.Size(545, 100);
+            this.tb_l.Size = new System.Drawing.Size(361, 52);
             this.tb_l.TabIndex = 7;
             this.tb_l.TickFrequency = 100;
             this.tb_l.Value = -500;
@@ -345,11 +358,11 @@
             // 
             this.tb_w.AutoSize = false;
             this.tb_w.Dock = System.Windows.Forms.DockStyle.Top;
-            this.tb_w.Location = new System.Drawing.Point(196, 631);
+            this.tb_w.Location = new System.Drawing.Point(196, 724);
             this.tb_w.Margin = new System.Windows.Forms.Padding(2);
             this.tb_w.Maximum = 4000;
             this.tb_w.Name = "tb_w";
-            this.tb_w.Size = new System.Drawing.Size(545, 100);
+            this.tb_w.Size = new System.Drawing.Size(361, 52);
             this.tb_w.TabIndex = 6;
             this.tb_w.TickFrequency = 100;
             this.tb_w.Value = 1400;
@@ -359,20 +372,20 @@
             // 
             this.tb_frame.AutoSize = false;
             this.tb_frame.Dock = System.Windows.Forms.DockStyle.Top;
-            this.tb_frame.Location = new System.Drawing.Point(196, 540);
+            this.tb_frame.Location = new System.Drawing.Point(196, 668);
             this.tb_frame.Margin = new System.Windows.Forms.Padding(2);
             this.tb_frame.Name = "tb_frame";
-            this.tb_frame.Size = new System.Drawing.Size(545, 87);
+            this.tb_frame.Size = new System.Drawing.Size(361, 52);
             this.tb_frame.TabIndex = 5;
             this.tb_frame.Scroll += new System.EventHandler(this.tb_frame_Scroll);
             // 
             // flowLayoutPanel1
             // 
-            this.tableLayoutPanel5.SetColumnSpan(this.flowLayoutPanel1, 2);
+            this.tableLayoutPanel5.SetColumnSpan(this.flowLayoutPanel1, 3);
             this.flowLayoutPanel1.Controls.Add(this.tableLayoutPanel6);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(2, 440);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(2, 568);
             this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(2);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(739, 96);
@@ -442,9 +455,9 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label6.Location = new System.Drawing.Point(3, 538);
+            this.label6.Location = new System.Drawing.Point(3, 666);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(188, 91);
+            this.label6.Size = new System.Drawing.Size(188, 56);
             this.label6.TabIndex = 9;
             this.label6.Text = "Slice:";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -453,9 +466,9 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label7.Location = new System.Drawing.Point(3, 629);
+            this.label7.Location = new System.Drawing.Point(3, 722);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(188, 104);
+            this.label7.Size = new System.Drawing.Size(188, 56);
             this.label7.TabIndex = 10;
             this.label7.Text = "Window:";
             this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -464,9 +477,9 @@
             // 
             this.label8.AutoSize = true;
             this.label8.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label8.Location = new System.Drawing.Point(3, 733);
+            this.label8.Location = new System.Drawing.Point(3, 778);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(188, 104);
+            this.label8.Size = new System.Drawing.Size(188, 56);
             this.label8.TabIndex = 11;
             this.label8.Text = "Level:";
             this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -475,9 +488,9 @@
             // 
             this.label9.AutoSize = true;
             this.label9.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label9.Location = new System.Drawing.Point(3, 837);
+            this.label9.Location = new System.Drawing.Point(3, 834);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(188, 105);
+            this.label9.Size = new System.Drawing.Size(188, 56);
             this.label9.TabIndex = 12;
             this.label9.Text = "Overlay Opacity:";
             this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -631,39 +644,6 @@
             this.lab_name.Text = "NONE";
             this.lab_name.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // dxImageBox1
-            // 
-            this.tableLayoutPanel5.SetColumnSpan(this.dxImageBox1, 2);
-            this.dxImageBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dxImageBox1.Frame = 0;
-            this.dxImageBox1.Level = -500;
-            this.dxImageBox1.Location = new System.Drawing.Point(2, 2);
-            this.dxImageBox1.Margin = new System.Windows.Forms.Padding(2);
-            this.dxImageBox1.Name = "dxImageBox1";
-            this.dxImageBox1.ShowZones = false;
-            this.dxImageBox1.Size = new System.Drawing.Size(739, 434);
-            this.dxImageBox1.TabIndex = 0;
-            this.dxImageBox1.Text = "dxImageBox1";
-            this.dxImageBox1.Threshold = 0F;
-            this.dxImageBox1.Window = 1400;
-            this.dxImageBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dxImageBox1_MouseDown);
-            this.dxImageBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.dxImageBox1_MouseMove);
-            this.dxImageBox1.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.dxImageBox1_MouseWheel);
-            this.dxImageBox1.Resize += new System.EventHandler(this.dxImageBox1_Resize);
-            // 
-            // mldDisplay1
-            // 
-            this.mldDisplay1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mldDisplay1.E = 2;
-            this.mldDisplay1.FrameAdjust = 0;
-            this.mldDisplay1.I = 1;
-            this.mldDisplay1.Location = new System.Drawing.Point(7, 7);
-            this.mldDisplay1.Margin = new System.Windows.Forms.Padding(7);
-            this.mldDisplay1.Name = "mldDisplay1";
-            this.mldDisplay1.Size = new System.Drawing.Size(720, 452);
-            this.mldDisplay1.TabIndex = 0;
-            this.mldDisplay1.Text = "mldDisplay1";
-            // 
             // label10
             // 
             this.label10.AutoSize = true;
@@ -703,6 +683,89 @@
             this.tb_tinterval.Size = new System.Drawing.Size(462, 35);
             this.tb_tinterval.TabIndex = 11;
             this.tb_tinterval.TextChanged += new System.EventHandler(this.tb_tinterval_TextChanged);
+            // 
+            // tb_slice
+            // 
+            this.tb_slice.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tb_slice.Location = new System.Drawing.Point(562, 669);
+            this.tb_slice.Name = "tb_slice";
+            this.tb_slice.Size = new System.Drawing.Size(178, 35);
+            this.tb_slice.TabIndex = 13;
+            this.tb_slice.TextChanged += new System.EventHandler(this.tb_slice_TextChanged);
+            // 
+            // tb_window
+            // 
+            this.tb_window.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tb_window.Location = new System.Drawing.Point(562, 725);
+            this.tb_window.Name = "tb_window";
+            this.tb_window.Size = new System.Drawing.Size(178, 35);
+            this.tb_window.TabIndex = 14;
+            this.tb_window.TextChanged += new System.EventHandler(this.tb_window_TextChanged);
+            // 
+            // tb_level
+            // 
+            this.tb_level.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tb_level.Location = new System.Drawing.Point(562, 781);
+            this.tb_level.Name = "tb_level";
+            this.tb_level.Size = new System.Drawing.Size(178, 35);
+            this.tb_level.TabIndex = 15;
+            this.tb_level.TextChanged += new System.EventHandler(this.tb_level_TextChanged);
+            // 
+            // tb_opacity
+            // 
+            this.tb_opacity.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tb_opacity.Location = new System.Drawing.Point(562, 837);
+            this.tb_opacity.Name = "tb_opacity";
+            this.tb_opacity.Size = new System.Drawing.Size(178, 35);
+            this.tb_opacity.TabIndex = 16;
+            this.tb_opacity.TextChanged += new System.EventHandler(this.tb_opacity_TextChanged);
+            // 
+            // button2
+            // 
+            this.button2.AutoSize = true;
+            this.button2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.button2.Location = new System.Drawing.Point(197, 893);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(359, 46);
+            this.button2.TabIndex = 12;
+            this.button2.Text = "Save Image";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // dxImageBox1
+            // 
+            this.tableLayoutPanel5.SetColumnSpan(this.dxImageBox1, 3);
+            this.dxImageBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dxImageBox1.Frame = 0;
+            this.dxImageBox1.Level = -500;
+            this.dxImageBox1.Location = new System.Drawing.Point(2, 2);
+            this.dxImageBox1.Margin = new System.Windows.Forms.Padding(2);
+            this.dxImageBox1.Name = "dxImageBox1";
+            this.dxImageBox1.ShowZones = false;
+            this.dxImageBox1.Size = new System.Drawing.Size(739, 562);
+            this.dxImageBox1.TabIndex = 0;
+            this.dxImageBox1.Text = "dxImageBox1";
+            this.dxImageBox1.Threshold = 0F;
+            this.dxImageBox1.Window = 1400;
+            this.dxImageBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dxImageBox1_MouseDown);
+            this.dxImageBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.dxImageBox1_MouseMove);
+            this.dxImageBox1.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.dxImageBox1_MouseWheel);
+            this.dxImageBox1.Resize += new System.EventHandler(this.dxImageBox1_Resize);
+            // 
+            // mldDisplay1
+            // 
+            this.mldDisplay1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mldDisplay1.E = 2;
+            this.mldDisplay1.FrameAdjust = 0;
+            this.mldDisplay1.FramesPerBreath = 20;
+            this.mldDisplay1.I = 1;
+            this.mldDisplay1.Location = new System.Drawing.Point(7, 7);
+            this.mldDisplay1.Margin = new System.Windows.Forms.Padding(7);
+            this.mldDisplay1.Marker = 0;
+            this.mldDisplay1.Name = "mldDisplay1";
+            this.mldDisplay1.Size = new System.Drawing.Size(720, 452);
+            this.mldDisplay1.TabIndex = 0;
+            this.mldDisplay1.Text = "mldDisplay1";
             // 
             // Form1
             // 
@@ -787,6 +850,11 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.TextBox tb_fpb;
         private System.Windows.Forms.TextBox tb_tinterval;
+        private System.Windows.Forms.TextBox tb_slice;
+        private System.Windows.Forms.TextBox tb_window;
+        private System.Windows.Forms.TextBox tb_level;
+        private System.Windows.Forms.TextBox tb_opacity;
+        private System.Windows.Forms.Button button2;
     }
 }
 
